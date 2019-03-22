@@ -1,7 +1,12 @@
+type User {
+    name: String!
+    capacities: String!
+}
+
 type Mutation {
-    hi: String
+    createUser(name: String!, capacities: String): User
 }
 
 type Query {
-    hi: String
+    users: [User]!
 }
