@@ -1,10 +1,10 @@
+const { forwardTo } = require('prisma-binding')
+
 const Query = {
-  users(parent, args, ctx, info) {
-    return [{
-      name: 'luciano pavarotti',
-      capacities: 'ball so hard',
-    }]
-  },
+  // users: forwardTo('db'),
+  items: forwardTo('db'),
+  item: forwardTo('db'),
+  itemsConnection: forwardTo('db'),
 }
 
 module.exports = Query
