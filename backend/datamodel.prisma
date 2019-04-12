@@ -1,8 +1,20 @@
 type User {
     id: ID! @unique
     name: String!
-    email: String!
-    capacities: String
+    email: String! @unique
+    password: String!
+    resetToken: String
+    resetTokenExpiry: Float
+    permissions: [Permission]
+}
+
+enum Permission {
+    ADMIN
+    USER
+    ITEMCREATE
+    ITEMUPDATE
+    ITEMDELETE
+    PERMISSIONUPDATE
 }
 
 type Item {

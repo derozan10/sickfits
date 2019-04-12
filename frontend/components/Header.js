@@ -18,14 +18,15 @@ Router.onRouteChangeError = () => {
 };
 
 const Logo = styled.h1`
-  font-size: 4rem;
-  margin-left: 2rem;
+  line-height: 1;
+  font-size: 3rem;
+  margin-left: 20px;
   position: relative;
   z-index: 2;
   transform: skew(-7deg);
   a {
     padding: 0.5rem 1rem;
-    background: ${props => props.theme.red};
+    background: ${props => props.theme.blue};
     color: white;
     text-transform: uppercase;
     text-decoration: none;
@@ -38,7 +39,7 @@ const Logo = styled.h1`
 
 const StyledHeader = styled.header`
   .bar {
-    border-bottom: 10px solid ${props => props.theme.black};
+    border-bottom: 1px solid ${props => props.theme.lightgrey};
     display: grid;
     grid-template-columns: auto 1fr;
     justify-content: space-between;
@@ -49,9 +50,9 @@ const StyledHeader = styled.header`
     }
   }
   .sub-bar {
+    box-shadow: rgba(54, 57, 73, 0.09) 0px 29px 60px 0px;
     display: grid;
     grid-template-columns: 1fr auto;
-    border-bottom: 1px solid ${props => props.theme.lightgrey};
   }
 `;
 
@@ -60,7 +61,7 @@ const Header = () => (
     <div className="bar">
       <Logo>
         <Link href="/">
-          <a>Sick Fits</a>
+          <a>CS</a>
         </Link>
       </Logo>
       <Nav />
