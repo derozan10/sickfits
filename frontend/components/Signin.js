@@ -1,18 +1,11 @@
 import React, { Component } from 'react';
+import Link from 'next/link';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import Form from './styles/Form';
 import Error from './ErrorMessage';
-
-const SIGNUPMUTATION = gql`
-  mutation SIGNUPMUTATION($email: String!, $password: String!, $name: String!) {
-    signup(email: $email, password: $password, name: $name) {
-      id
-      name
-      email
-    }
-  }
-`;
+import User, { CURRENT_USER_QUERY } from './User';
+import RequestReset from './RequestReset';
 
 const SIGNINMUTATION = gql`
   mutation SIGNINMUTATION($email: String!, $password: String!) {
@@ -26,7 +19,6 @@ const SIGNINMUTATION = gql`
 
 class Signin extends Component {
   state = {
-    name: '',
     password: '',
     email: '',
   };
@@ -35,93 +27,68 @@ class Signin extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  submitHandler = async (e, signup) => {
+  submitHandler = async (e, fn) => {
     e.preventDefault();
-    await signup();
-    this.setState({ name: '', password: '', email: '' });
+    await fn();
+    this.setState({ password: '', email: '' });
   };
 
   render() {
     return (
       <>
-        <Mutation mutation={SIGNUPMUTATION} variables={this.state}>
-          {(signup, { error, loading }) => (
-            <Form method="POST" onSubmit={e => this.submitHandler(e, signup)}>
-              <fieldset disabled={loading} aria-busy={loading}>
-                <h2>Sign Up</h2>
-                <Error error={error} />
-                <label htmlFor="email">
-                  Email
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="email"
-                    autoComplete="email"
-                    value={this.state.email}
-                    onChange={this.saveToState}
-                  />
-                </label>
-                <label htmlFor="name">
-                  Name
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="name"
-                    autoComplete="username"
-                    value={this.state.name}
-                    onChange={this.saveToState}
-                  />
-                </label>
-                <label htmlFor="password">
-                  Password
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="password"
-                    autoComplete="current-password"
-                    value={this.state.password}
-                    onChange={this.saveToState}
-                  />
-                </label>
+        <User>
+          {({ me }) => {
+            if (me) {
+              return <p>You are logged in. Shop away!</p>;
+            }
+            return (
+              <Mutation
+                mutation={SIGNINMUTATION}
+                variables={this.state}
+                refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+              >
+                {(signin, { error, loading }) => (
+                  <Form
+                    method="POST"
+                    onSubmit={e => this.submitHandler(e, signin)}
+                  >
+                    <fieldset disabled={loading} aria-busy={loading}>
+                      <h2>Sign In</h2>
+                      <Error error={error} />
+                      <label htmlFor="email">
+                        Email
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="email"
+                          value={this.state.email}
+                          onChange={this.saveToState}
+                        />
+                      </label>
+                      <label htmlFor="password">
+                        Password
+                        <input
+                          type="password"
+                          name="password"
+                          placeholder="password"
+                          autoComplete="current-password"
+                          value={this.state.password}
+                          onChange={this.saveToState}
+                        />
+                      </label>
 
-                <button type="submit">Sign In!</button>
-              </fieldset>
-            </Form>
-          )}
-        </Mutation>
-        <Mutation mutation={SIGNINMUTATION} variables={this.state}>
-          {(signin, { error, loading }) => (
-            <Form method="POST" onSubmit={e => this.submitHandler(e, signin)}>
-              <fieldset disabled={loading} aria-busy={loading}>
-                <h2>Sign In</h2>
-                <Error error={error} />
-                <label htmlFor="email">
-                  Email
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="email"
-                    value={this.state.email}
-                    onChange={this.saveToState}
-                  />
-                </label>
-                <label htmlFor="password">
-                  Password
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="password"
-                    autoComplete="current-password"
-                    value={this.state.password}
-                    onChange={this.saveToState}
-                  />
-                </label>
-
-                <button type="submit">Sign In!</button>
-              </fieldset>
-            </Form>
-          )}
-        </Mutation>
+                      <button type="submit">Sign In!</button>
+                      <p>
+                        No account yet? <Link href="/signup">Sing up!</Link>
+                      </p>
+                    </fieldset>
+                  </Form>
+                )}
+              </Mutation>
+            );
+          }}
+        </User>
+        <RequestReset />
       </>
     );
   }

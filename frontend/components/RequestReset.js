@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+// import Link from 'next/link';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import Form from './styles/Form';
@@ -16,26 +17,28 @@ class RequestReset extends Component {
   state = {
     email: '',
   };
+
   saveToState = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
+
+  submitHandler = async (e, fn) => {
+    e.preventDefault();
+    await fn();
+    this.setState({ email: '' });
+  };
+
   render() {
     return (
       <Mutation mutation={REQUEST_RESET_MUTATION} variables={this.state}>
-        {(reset, { error, loading, called }) => (
-          <Form
-            method="post"
-            data-test="form"
-            onSubmit={async e => {
-              e.preventDefault();
-              await reset();
-              this.setState({ email: '' });
-            }}
-          >
-            <fieldset disabled={loading} aria-busy={loading}>
-              <h2>Request a password reset</h2>
-              <Error error={error} />
-              {!error && !loading && called && <p>Success! Check your email for a reset link!</p>}
+        {(reqRest, { error, loading, called }) => (
+          <Form method="POST" onSubmit={e => this.submitHandler(e, reqRest)}>
+            <Error error={error} />
+            {!error && !loading && called && (
+              <p>Succes, check your e-mail for further instructions</p>
+            )}
+            <p>Forgot your password? reset it here</p>
+            <fieldset disabled={loading || called} aria-busy={loading}>
               <label htmlFor="email">
                 Email
                 <input
@@ -46,8 +49,7 @@ class RequestReset extends Component {
                   onChange={this.saveToState}
                 />
               </label>
-
-              <button type="submit">Request Reset!</button>
+              <button type="submit">Reset password</button>
             </fieldset>
           </Form>
         )}
@@ -57,4 +59,3 @@ class RequestReset extends Component {
 }
 
 export default RequestReset;
-export { REQUEST_RESET_MUTATION };

@@ -40,13 +40,13 @@ const Form = styled.form`
     border-radius: 5px;
     cursor: pointer;
     &:hover {
-      background: darkblue;
+      background: ${props => props.theme.darkBlue};
     }
   }
   button,
   input[type='submit'] {
     width: auto;
-    background: blue;
+    background: ${props => props.theme.blue};
     color: white;
     border: 0;
     font-size: 2rem;

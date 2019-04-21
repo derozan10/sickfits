@@ -61,7 +61,7 @@ const Header = () => (
     <div className="bar">
       <Logo>
         <Link href="/">
-          <a>CS</a>
+          <a>Collishop</a>
         </Link>
       </Logo>
       <Nav />

@@ -1,11 +1,13 @@
 type User {
-    id: ID! @unique
+    id: ID! @id @unique
     name: String!
     email: String! @unique
     password: String!
     resetToken: String
     resetTokenExpiry: Float
-    permissions: [Permission]
+    permissions: [Permission] @scalarList(strategy: RELATION)
+    updatedAt: DateTime! @updatedAt
+    createdAt: DateTime! @createdAt
 }
 
 enum Permission {
@@ -18,13 +20,13 @@ enum Permission {
 }
 
 type Item {
-    id: ID! @unique
+    id: ID! @id @unique
     title: String!
     description: String!
     image: String
     largeImage: String
     price: Int!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    # user: User!
+    user: User
+    createdAt: DateTime! @createdAt
+    updatedAt: DateTime! @updatedAt
 }

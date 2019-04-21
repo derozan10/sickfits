@@ -5,12 +5,12 @@ import Form from './styles/Form';
 import Error from './ErrorMessage';
 import { CURRENT_USER_QUERY } from './User';
 
-const SIGNUP_MUTATION = gql`
-  mutation SIGNUP_MUTATION($email: String!, $name: String!, $password: String!) {
-    signup(email: $email, name: $name, password: $password) {
+const SIGNUPMUTATION = gql`
+  mutation SIGNUPMUTATION($email: String!, $password: String!, $name: String!) {
+    signup(email: $email, password: $password, name: $name) {
       id
-      email
       name
+      email
     }
   }
 `;
@@ -18,30 +18,31 @@ const SIGNUP_MUTATION = gql`
 class Signup extends Component {
   state = {
     name: '',
-    email: '',
     password: '',
+    email: '',
   };
+
   saveToState = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
+
+  submitHandler = async (e, fn) => {
+    e.preventDefault();
+    await fn();
+    this.setState({ name: '', password: '', email: '' });
+  };
+
   render() {
     return (
       <Mutation
-        mutation={SIGNUP_MUTATION}
+        mutation={SIGNUPMUTATION}
         variables={this.state}
         refetchQueries={[{ query: CURRENT_USER_QUERY }]}
       >
         {(signup, { error, loading }) => (
-          <Form
-            method="post"
-            onSubmit={async e => {
-              e.preventDefault();
-              await signup();
-              this.setState({ name: '', email: '', password: '' });
-            }}
-          >
+          <Form method="POST" onSubmit={e => this.submitHandler(e, signup)}>
             <fieldset disabled={loading} aria-busy={loading}>
-              <h2>Sign Up for An Account</h2>
+              <h2>Sign Up</h2>
               <Error error={error} />
               <label htmlFor="email">
                 Email
@@ -49,6 +50,7 @@ class Signup extends Component {
                   type="email"
                   name="email"
                   placeholder="email"
+                  autoComplete="email"
                   value={this.state.email}
                   onChange={this.saveToState}
                 />
@@ -59,6 +61,7 @@ class Signup extends Component {
                   type="text"
                   name="name"
                   placeholder="name"
+                  autoComplete="username"
                   value={this.state.name}
                   onChange={this.saveToState}
                 />
@@ -69,12 +72,13 @@ class Signup extends Component {
                   type="password"
                   name="password"
                   placeholder="password"
+                  autoComplete="current-password"
                   value={this.state.password}
                   onChange={this.saveToState}
                 />
               </label>
 
-              <button type="submit">Sign Up!</button>
+              <button type="submit">Sign up</button>
             </fieldset>
           </Form>
         )}
@@ -84,4 +88,3 @@ class Signup extends Component {
 }
 
 export default Signup;
-export { SIGNUP_MUTATION };

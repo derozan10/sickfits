@@ -1,57 +1,65 @@
 import React, { Component } from 'react';
-import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
-import PropTypes from 'prop-types';
+import { Mutation } from 'react-apollo';
 import Form from './styles/Form';
 import Error from './ErrorMessage';
 import { CURRENT_USER_QUERY } from './User';
 
-const RESET_MUTATION = gql`
-  mutation RESET_MUTATION($resetToken: String!, $password: String!, $confirmPassword: String!) {
-    resetPassword(resetToken: $resetToken, password: $password, confirmPassword: $confirmPassword) {
-      id
-      email
+const RESET_PASSPORT_MUTATION = gql`
+  mutation RESET_PASSPORT_MUTATION(
+    $resetToken: String!
+    $password: String!
+    $confirmedPassword: String!
+  ) {
+    resetPassword(
+      resetToken: $resetToken
+      password: $password
+      confirmPassword: $confirmedPassword
+    ) {
       name
+      email
     }
   }
 `;
 
 class Reset extends Component {
-  static propTypes = {
-    resetToken: PropTypes.string.isRequired,
-  };
   state = {
     password: '',
-    confirmPassword: '',
+    confirmedPassword: '',
   };
-  saveToState = e => {
-    this.setState({ [e.target.name]: e.target.value });
+
+  submitHandler = async (e, fn) => {
+    e.preventDefault();
+    await fn();
+    this.setState({
+      password: '',
+      confirmedPassword: '',
+    });
   };
+
+  saveToState = e => this.setState({ [e.target.name]: e.target.value });
+
   render() {
+    const { resetToken } = this.props.query;
+    const { password, confirmedPassword } = this.state;
+
     return (
       <Mutation
-        mutation={RESET_MUTATION}
+        mutation={RESET_PASSPORT_MUTATION}
         variables={{
-          resetToken: this.props.resetToken,
-          password: this.state.password,
-          confirmPassword: this.state.confirmPassword,
+          resetToken,
+          password,
+          confirmedPassword,
         }}
         refetchQueries={[{ query: CURRENT_USER_QUERY }]}
       >
-        {(reset, { error, loading, called }) => (
-          <Form
-            method="post"
-            onSubmit={async e => {
-              e.preventDefault();
-              await reset();
-              this.setState({ password: '', confirmPassword: '' });
-            }}
-          >
-            <fieldset disabled={loading} aria-busy={loading}>
-              <h2>Reset Your Password</h2>
-              <Error error={error} />
+        {(reqRest, { error, loading, called }) => (
+          <Form method="POST" onSubmit={e => this.submitHandler(e, reqRest)}>
+            <Error error={error} />
+            {!error && !loading && called && <p>Your password is changed</p>}
+            <fieldset disabled={loading || called} aria-busy={loading}>
               <label htmlFor="password">
-                Password
+                new password
                 <input
                   type="password"
                   name="password"
@@ -60,19 +68,17 @@ class Reset extends Component {
                   onChange={this.saveToState}
                 />
               </label>
-
-              <label htmlFor="confirmPassword">
-                Confirm Your Password
+              <label htmlFor="confirmedPassword">
+                Confirm new password
                 <input
                   type="password"
-                  name="confirmPassword"
-                  placeholder="confirmPassword"
-                  value={this.state.confirmPassword}
+                  name="confirmedPassword"
+                  placeholder="password confirmation"
+                  value={this.state.confirmedPassword}
                   onChange={this.saveToState}
                 />
               </label>
-
-              <button type="submit">Reset Your Password!</button>
+              <button type="submit">Reset password</button>
             </fieldset>
           </Form>
         )}
