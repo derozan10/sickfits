@@ -14,12 +14,15 @@ type Mutation {
     signout: SuccessMessage
     requestReset(email: String!): SuccessMessage
     resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
+    updatePermissions(permissions: [Permission], userId: ID!): User
+    addToCart(itemId: ID!, quantity: Int): CartItem!
+    removeFromCart(id: ID!): CartItem
 }
 
 type Query {
     items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
     item(where: ItemWhereUniqueInput!): Item
-    users(where: UserWhereInput): User
+    users(where: UserWhereInput): [User]!
     itemsConnection: ItemConnection
     me: User
 }
@@ -29,4 +32,5 @@ type User {
     name: String!
     email: String! @unique
     permissions: [Permission]
+    cart: [CartItem!]!
 }
