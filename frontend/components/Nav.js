@@ -3,6 +3,7 @@ import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import NavStyles from './styles/NavStyles';
 import User, { CURRENT_USER_QUERY } from './User';
+import { TOGGLE_CART_MUTATION } from './Cart';
 
 const SIGNOUT_MUTATION = gql`
   mutation SIGNOUT_MUTATION {
@@ -44,8 +45,13 @@ const Nav = () => (
             )}
           </Mutation>
         ) : (
-          <Link href="/signin">Signin</Link>
+          <Link href="/signin">
+            <a>Signin</a>
+          </Link>
         )}
+        <Mutation mutation={TOGGLE_CART_MUTATION}>
+          {toggleCart => <button onClick={() => toggleCart()}>my cart</button>}
+        </Mutation>
       </NavStyles>
     )}
   </User>
