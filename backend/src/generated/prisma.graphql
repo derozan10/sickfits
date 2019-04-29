@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/lucas-van-remoortere-9e63c5/sick-fits/dev
-# timestamp: Thu Apr 25 2019 14:14:50 GMT+0200 (CEST)
+# timestamp: Sat Apr 27 2019 14:53:57 GMT+0200 (Central European Summer Time)
 
 type AggregateCartItem {
   count: Int!

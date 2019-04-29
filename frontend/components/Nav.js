@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Mutation } from 'react-apollo';
+import { Mutation, Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import NavStyles from './styles/NavStyles';
 import User, { CURRENT_USER_QUERY } from './User';
 import { TOGGLE_CART_MUTATION } from './Cart';
+import CartCount from './CartCount';
 
 const SIGNOUT_MUTATION = gql`
   mutation SIGNOUT_MUTATION {
@@ -12,6 +13,7 @@ const SIGNOUT_MUTATION = gql`
     }
   }
 `;
+
 const Nav = () => (
   <User>
     {({ me }) => (
@@ -49,9 +51,21 @@ const Nav = () => (
             <a>Signin</a>
           </Link>
         )}
-        <Mutation mutation={TOGGLE_CART_MUTATION}>
-          {toggleCart => <button onClick={() => toggleCart()}>my cart</button>}
-        </Mutation>
+        {me && (
+          <Mutation mutation={TOGGLE_CART_MUTATION}>
+            {toggleCart => (
+              <button type="button" onClick={() => toggleCart()}>
+                my cart
+                <CartCount
+                  count={me.cart.reduce(
+                    (acc, cartItem) => acc + cartItem.quantity,
+                    0
+                  )}
+                />
+              </button>
+            )}
+          </Mutation>
+        )}
       </NavStyles>
     )}
   </User>

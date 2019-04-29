@@ -24,7 +24,7 @@ const CartItem = ({ cartItem }) => {
   if (!cartItem.item)
     return (
       <CartItemStyles>
-        <p>This Item has been removed</p>
+        <p>This Item has been removed from the store</p>
         <RemoveFromCart id={cartItem.id} />
       </CartItemStyles>
     );

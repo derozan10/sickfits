@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -24,57 +25,51 @@ export const TOGGLE_CART_MUTATION = gql`
   }
 `;
 
-class Cart extends Component {
-  render() {
-    return (
-      <User>
-        {({ me }) => {
-          const { cart } = me;
-          return (
-            <>
-              <Mutation mutation={TOGGLE_CART_MUTATION}>
-                {toggleCart => (
-                  <Query query={LOCAL_STATE_QUERY}>
-                    {({ data }) => (
-                      <CartStyles open={data.cartOpen}>
-                        <header>
-                          <CloseButton
-                            title="close"
-                            onClick={() => toggleCart()}
-                          >
-                            &times;
-                          </CloseButton>
-                          <Supreme>Your Cart</Supreme>
-                          <p>
-                            {`You have ${cart.length} item ${
-                              cart.length === 1 ? '' : 's'
-                            } in your cart`}
-                          </p>
-                        </header>
-                        <ul>
-                          {cart.map(cartItem => (
-                            <CartItem key={cartItem.id} cartItem={cartItem} />
-                          ))}
-                        </ul>
-                        <footer>
-                          <p>{formatMoney(calcTotalPrice(me.cart))}</p>
-                          {cart.length && (
-                            // <TakeMyMoney>
-                            <SickButton>Checkout</SickButton>
-                            // </TakeMyMoney>
-                          )}
-                        </footer>
-                      </CartStyles>
-                    )}
-                  </Query>
-                )}
-              </Mutation>
-            </>
-          );
-        }}
-      </User>
-    );
-  }
-}
+const Composed = adopt({
+  user: ({ render }) => <User>{render}</User>,
+  toggleCart: ({ render }) => (
+    <Mutation mutation={TOGGLE_CART_MUTATION}>{render}</Mutation>
+  ),
+  localState: ({ render }) => <Query query={LOCAL_STATE_QUERY}>{render}</Query>,
+});
+
+const Cart = () => (
+  <Composed>
+    {({ user, toggleCart, localState }) => {
+      const { me } = user;
+      if (!me) return null;
+      const { cartOpen } = localState.data;
+      return (
+        <CartStyles open={cartOpen}>
+          <header>
+            <CloseButton title="close" onClick={() => toggleCart()}>
+              &times;
+            </CloseButton>
+            <Supreme>Your Cart</Supreme>
+            <p>
+              {me &&
+                `You have ${me.cart.length} item ${
+                  me.cart.length === 1 ? '' : 's'
+                } in your cart`}
+            </p>
+          </header>
+          <ul>
+            {me.cart.map(cartItem => (
+              <CartItem key={cartItem.id} cartItem={cartItem} />
+            ))}
+          </ul>
+          <footer>
+            <p>{formatMoney(calcTotalPrice(me.cart))}</p>
+            {me && me.cart.length && (
+              // <TakeMyMoney>
+              <SickButton>Checkout</SickButton>
+              // </TakeMyMoney>
+            )}
+          </footer>
+        </CartStyles>
+      );
+    }}
+  </Composed>
+);
 
 export default Cart;

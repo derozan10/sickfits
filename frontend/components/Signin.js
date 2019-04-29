@@ -79,7 +79,10 @@ class Signin extends Component {
 
                       <button type="submit">Sign In!</button>
                       <p>
-                        No account yet? <Link href="/signup">Sing up!</Link>
+                        No account yet?{' '}
+                        <Link href="/signup">
+                          <a>Sign up!</a>
+                        </Link>
                       </p>
                     </fieldset>
                   </Form>

@@ -38,6 +38,10 @@ const Logo = styled.h1`
 `;
 
 const StyledHeader = styled.header`
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 20;
   .bar {
     border-bottom: 1px solid ${props => props.theme.lightgrey};
     display: grid;
