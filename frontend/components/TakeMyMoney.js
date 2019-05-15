@@ -9,7 +9,7 @@ import calcTotalPrice from '../lib/calcTotalPrice';
 import Error from './ErrorMessage';
 import User, { CURRENT_USER_QUERY } from './User';
 
-const CREATE_ORDER_MUTATION = gql`
+export const CREATE_ORDER_MUTATION = gql`
   mutation createOrder($token: String!) {
     createOrder(token: $token) {
       id
@@ -43,10 +43,11 @@ class TakeMyMoney extends React.Component {
       query: { id: order.data.createOrder.id },
     });
   };
+
   render() {
     return (
       <User>
-        {({ data: { me }, loading }) => {
+        {({ me }, loading) => {
           if (loading) return null;
           return (
             <Mutation
@@ -58,9 +59,11 @@ class TakeMyMoney extends React.Component {
                   amount={calcTotalPrice(me.cart)}
                   name="Sick Fits"
                   description={`Order of ${totalItems(me.cart)} items!`}
-                  image={me.cart.length && me.cart[0].item && me.cart[0].item.image}
-                  stripeKey="pk_test_Vtknn6vSdcZWSG2JWvEiWSqC"
-                  currency="USD"
+                  image={
+                    me.cart.length && me.cart[0].item && me.cart[0].item.image
+                  }
+                  stripeKey="pk_test_OUHLJo23MbGm6Ozqpb9Kzriu"
+                  currency="EUR"
                   email={me.email}
                   token={res => this.onToken(res, createOrder)}
                 >
@@ -76,4 +79,3 @@ class TakeMyMoney extends React.Component {
 }
 
 export default TakeMyMoney;
-export { CREATE_ORDER_MUTATION };
